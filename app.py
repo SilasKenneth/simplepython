@@ -19,22 +19,23 @@ def remove(postid):
     afterdelete="Post successfully deleted"
     redirect(url_for("home"))
     return render_template("index.html",posts=Post.select().order_by(Post.date_posted.desc()),after=afterdelete,count=len(Post.select().order_by(Post.date_posted.desc())))
-@app.route("/<username>/edit",methods=['POST','GET'])
-def edituser(username):
+@app.route("/<postid>/edit",methods=['POST','GET'])
+def edituser(postid):
     error=""
-    success="The record <strong><em>{}</strong></em> was successfully update".format(username)
-    if username not in users:
-                return render_template("404.html")
+    success="The record was successfully updated"
+    post=Post.get(Post.id==postid)
     if request.method=="POST":
-        newusername=request.form['username'].strip()
-        if(newusername==""):
-            error="Please give us a username"
+        newtitle=request.form['title'].strip()
+        newcontent=request.form['content'].strip()
+        if(newtitle=="" or newcontent==""):
+            error="Please provide a title and content before saving"
         else:
-            if username not in users:
-                return render_template("404.html")
-            users[users.index(username)]=newusername
+            post.title=newtitle
+            post.content=newcontent
+            post.date_posted=datetime.datetime.now()
+            post.save()
             return redirect(url_for('home',success=success))
-    return render_template("view.html",user=username,error=error)
+    return render_template("view.html",post=post,error=error)
 @app.route("/user/new",methods=["POST","GET"])
 def newuser():
     error=None

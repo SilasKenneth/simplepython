@@ -21,9 +21,5 @@ class Post(Model):
 def initialize_db():
     db.connect()
     db.create_tables([User,Post],safe=True)
-def create_data():
-    user=User.create(username="Silas Kenneth",emailaddress="silaskenn@gmail.com",password=crypt("Nyamwaro2012"))
-    user1=User.create(username="James Makori",emailaddress="jamesmakori@gmail.com",password=crypt("Nyamwaro2012"))
-    user2=User.create(username="John Kennedy",emailaddress="johnkennedy@gmail.com",password=crypt("Nyamwaro2012"))
 initialize_db()
 
