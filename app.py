@@ -3,6 +3,8 @@ from json import dumps
 from models import *
 from flask_moment import Moment
 import datetime
+import jsonify
+from requests import Response as res
 app=Flask(__name__)
 moment=Moment(app)
 @app.route("/",methods=["GET"])
@@ -20,7 +22,7 @@ def remove(postid):
     redirect(url_for("home"))
     return render_template("index.html",posts=Post.select().order_by(Post.date_posted.desc()),datenow=datetime.datetime.now() ,after=afterdelete,count=len(Post.select().order_by(Post.date_posted.desc())))
 @app.route("/<postid>/edit",methods=['POST','GET'])
-def edituser(postid):
+def editpost(postid):
     error=""
     success="The record was successfully updated"
     post=Post.get(Post.id==postid)
@@ -37,7 +39,7 @@ def edituser(postid):
             return redirect(url_for('home',success=success))
     return render_template("view.html",post=post,error=error)
 @app.route("/user/new",methods=["POST","GET"])
-def newuser():
+def new_post():
     error=None
     if request.method=="POST":
         if(request.form['userid'].strip()=="" or request.form['title'].strip()=="" or request.form['content'].strip()==""):
@@ -45,13 +47,17 @@ def newuser():
         else:
             Post.create(user_id=request.form['userid'],title=request.form['title'],content=request.form['content'])
             return redirect(url_for('home',success="The record was successfully saved"))
-    return render_template('new_user.html',error=error)
+    return render_template('new_post.html',error=error)
 @app.route("/post/<int:postid>",methods=["GET"])
 def view_post(postid):
     post=Post.get(Post.id==postid)
     user=User.get(User.id==post.user_id)
     print(post)
     return render_template("view_post.html",post=post,datenow=datetime.datetime.now(),user=user)
+@app.route("/api/posts",methods=['GET'])
+def api_posts():
+    posts=Post.select().order_by(Post.date_posted.desc())
+    return res.json(posts.title)
 @app.errorhandler (404)
 def not_found(error):
     return render_template('404.html'), 404
