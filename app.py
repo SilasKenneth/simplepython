@@ -18,7 +18,7 @@ def remove(postid):
     post.delete_instance()
     afterdelete="Post successfully deleted"
     redirect(url_for("home"))
-    return render_template("index.html",posts=Post.select().order_by(Post.date_posted.desc()),after=afterdelete,count=len(Post.select().order_by(Post.date_posted.desc())))
+    return render_template("index.html",posts=Post.select().order_by(Post.date_posted.desc()),datenow=datetime.datetime.now() ,after=afterdelete,count=len(Post.select().order_by(Post.date_posted.desc())))
 @app.route("/<postid>/edit",methods=['POST','GET'])
 def edituser(postid):
     error=""
